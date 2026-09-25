@@ -5,7 +5,8 @@
 
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, user-scalable=no">
 
     <title>Space Battle Game | Tanshu</title>
 
@@ -35,13 +36,15 @@
 
             overflow: hidden;
 
+            touch-action: none;
+
         }
 
         h1 {
 
             color: #60a5fa;
 
-            margin: 15px 0 5px;
+            margin: 10px 0 5px;
 
             text-shadow: 0 0 15px #2563eb;
 
@@ -51,7 +54,7 @@
 
             display: flex;
 
-            gap: 40px;
+            gap: 35px;
 
             font-size: 18px;
 
@@ -69,7 +72,7 @@
 
             height: 600px;
 
-            max-height: 75vh;
+            max-height: 70vh;
 
             background:
 
@@ -103,7 +106,17 @@
 
             background: #2563eb;
 
-            clip-path: polygon(50% 0%, 100% 100%, 50% 75%, 0% 100%);
+            clip-path: polygon(
+
+                50% 0%,
+
+                100% 100%,
+
+                50% 75%,
+
+                0% 100%
+
+            );
 
             left: 50%;
 
@@ -219,6 +232,8 @@
 
             text-align: center;
 
+            z-index: 20;
+
         }
 
         #gameOver h2 {
@@ -237,7 +252,7 @@
 
         }
 
-        button {
+        .restart {
 
             padding: 13px 28px;
 
@@ -255,14 +270,6 @@
 
         }
 
-        button:hover {
-
-            background: #3b82f6;
-
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.7);
-
-        }
-
         .controls {
 
             margin-top: 10px;
@@ -273,9 +280,63 @@
 
         }
 
+        .touch-controls {
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: center;
+
+            gap: 20px;
+
+            margin-top: 12px;
+
+        }
+
+        .touch-btn {
+
+            width: 65px;
+
+            height: 55px;
+
+            border: none;
+
+            border-radius: 15px;
+
+            background: #1e293b;
+
+            color: white;
+
+            font-size: 25px;
+
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+
+            -webkit-tap-highlight-color: transparent;
+
+            user-select: none;
+
+        }
+
+        .shoot-btn {
+
+            width: 85px;
+
+            background: #dc2626;
+
+            font-size: 18px;
+
+        }
+
+        .touch-btn:active {
+
+            transform: scale(0.92);
+
+        }
+
         .back {
 
-            margin-top: 10px;
+            margin-top: 8px;
 
             color: #60a5fa;
 
@@ -285,17 +346,31 @@
 
         @media (max-width: 600px) {
 
+            h1 {
+
+                font-size: 26px;
+
+            }
+
             .info {
 
-                gap: 15px;
+                gap: 25px;
 
-                font-size: 14px;
+                font-size: 15px;
 
             }
 
             #game {
 
-                height: 65vh;
+                width: 94vw;
+
+                height: 58vh;
+
+            }
+
+            .controls {
+
+                font-size: 13px;
 
             }
 
@@ -315,19 +390,24 @@
     <div class="info">
 
         <div>
+
             ❤️ Health:
             <span id="health">100</span>
+
         </div>
 
         <div>
+
             ⭐ Score:
             <span id="score">0</span>
+
         </div>
 
     </div>
 
 
     <div id="game">
+
 
         <div id="player"></div>
 
@@ -337,51 +417,110 @@
             <h2>GAME OVER</h2>
 
             <p>
+
                 Final Score:
                 <span id="finalScore">0</span>
+
             </p>
 
-            <button onclick="restartGame()">
+            <button
+                class="restart"
+                onclick="restartGame()">
+
                 🔄 Play Again
+
             </button>
 
         </div>
+
+
+    </div>
+
+
+    <div class="touch-controls">
+
+        <button
+            class="touch-btn"
+            id="leftBtn">
+
+            ◀
+
+        </button>
+
+
+        <button
+            class="touch-btn shoot-btn"
+            id="shootBtn">
+
+            🔥 FIRE
+
+        </button>
+
+
+        <button
+            class="touch-btn"
+            id="rightBtn">
+
+            ▶
+
+        </button>
 
     </div>
 
 
     <div class="controls">
 
-        ⬅️ ➡️ Move &nbsp;&nbsp; | &nbsp;&nbsp;
-        SPACE = Shoot
+        PC: ⬅️ ➡️ Move &nbsp; | &nbsp; SPACE = Shoot
 
     </div>
 
 
-    <a class="back" href="index.html">
+    <a
+        class="back"
+        href="index.html">
+
         ← Back to Tanshu
+
     </a>
 
 
     <script>
 
+
         const game =
             document.getElementById("game");
+
 
         const player =
             document.getElementById("player");
 
+
         const healthText =
             document.getElementById("health");
+
 
         const scoreText =
             document.getElementById("score");
 
+
         const gameOver =
             document.getElementById("gameOver");
 
+
         const finalScore =
             document.getElementById("finalScore");
+
+
+        const leftBtn =
+            document.getElementById("leftBtn");
+
+
+        const rightBtn =
+            document.getElementById("rightBtn");
+
+
+        const shootBtn =
+            document.getElementById("shootBtn");
 
 
         let playerX = 0;
@@ -396,13 +535,18 @@
 
         let keys = {};
 
+        let touchLeft = false;
+
+        let touchRight = false;
+
         let gameRunning = true;
 
 
         function setupPlayer() {
 
             playerX =
-                (game.clientWidth - player.offsetWidth) / 2;
+                (game.clientWidth -
+                player.offsetWidth) / 2;
 
             player.style.left =
                 playerX + "px";
@@ -415,10 +559,15 @@
 
         window.addEventListener("resize", () => {
 
-            if (playerX > game.clientWidth - player.offsetWidth) {
+            if (
+                playerX >
+                game.clientWidth -
+                player.offsetWidth
+            ) {
 
                 playerX =
-                    game.clientWidth - player.offsetWidth;
+                    game.clientWidth -
+                    player.offsetWidth;
 
             }
 
@@ -426,6 +575,9 @@
                 playerX + "px";
 
         });
+
+
+        // PC KEYBOARD
 
 
         document.addEventListener("keydown", (e) => {
@@ -450,31 +602,216 @@
         });
 
 
+        // TOUCH CONTROLS
+
+
+        function startLeft(e) {
+
+            e.preventDefault();
+
+            touchLeft = true;
+
+        }
+
+
+        function stopLeft(e) {
+
+            e.preventDefault();
+
+            touchLeft = false;
+
+        }
+
+
+        function startRight(e) {
+
+            e.preventDefault();
+
+            touchRight = true;
+
+        }
+
+
+        function stopRight(e) {
+
+            e.preventDefault();
+
+            touchRight = false;
+
+        }
+
+
+        leftBtn.addEventListener(
+            "touchstart",
+            startLeft,
+            { passive: false }
+        );
+
+
+        leftBtn.addEventListener(
+            "touchend",
+            stopLeft,
+            { passive: false }
+        );
+
+
+        leftBtn.addEventListener(
+            "touchcancel",
+            stopLeft,
+            { passive: false }
+        );
+
+
+        rightBtn.addEventListener(
+            "touchstart",
+            startRight,
+            { passive: false }
+        );
+
+
+        rightBtn.addEventListener(
+            "touchend",
+            stopRight,
+            { passive: false }
+        );
+
+
+        rightBtn.addEventListener(
+            "touchcancel",
+            stopRight,
+            { passive: false }
+        );
+
+
+        // Mouse support for computer
+
+
+        leftBtn.addEventListener(
+            "mousedown",
+            () => {
+
+                touchLeft = true;
+
+            }
+        );
+
+
+        leftBtn.addEventListener(
+            "mouseup",
+            () => {
+
+                touchLeft = false;
+
+            }
+        );
+
+
+        leftBtn.addEventListener(
+            "mouseleave",
+            () => {
+
+                touchLeft = false;
+
+            }
+        );
+
+
+        rightBtn.addEventListener(
+            "mousedown",
+            () => {
+
+                touchRight = true;
+
+            }
+        );
+
+
+        rightBtn.addEventListener(
+            "mouseup",
+            () => {
+
+                touchRight = false;
+
+            }
+        );
+
+
+        rightBtn.addEventListener(
+            "mouseleave",
+            () => {
+
+                touchRight = false;
+
+            }
+        );
+
+
+        shootBtn.addEventListener(
+            "touchstart",
+            (e) => {
+
+                e.preventDefault();
+
+                shoot();
+
+            },
+
+            { passive: false }
+
+        );
+
+
+        shootBtn.addEventListener(
+            "mousedown",
+            (e) => {
+
+                e.preventDefault();
+
+                shoot();
+
+            }
+
+        );
+
+
         function shoot() {
 
             if (!gameRunning)
                 return;
 
+
             const bullet =
                 document.createElement("div");
 
-            bullet.className = "bullet";
+
+            bullet.className =
+                "bullet";
+
+
+            const bulletX =
+                playerX +
+                player.offsetWidth / 2 -
+                2.5;
+
 
             bullet.style.left =
-                (playerX + 25) + "px";
+                bulletX + "px";
 
-            bullet.style.bottom =
-                "75px";
+
+            bullet.style.top =
+                (game.clientHeight - 80) + "px";
+
 
             game.appendChild(bullet);
+
 
             bullets.push({
 
                 element: bullet,
 
-                x: playerX + 25,
+                x: bulletX,
 
-                y: game.clientHeight - 75
+                y: game.clientHeight - 80
 
             });
 
@@ -486,22 +823,30 @@
             if (!gameRunning)
                 return;
 
+
             const enemy =
                 document.createElement("div");
 
-            enemy.className = "enemy";
+
+            enemy.className =
+                "enemy";
+
 
             const x =
                 Math.random() *
                 (game.clientWidth - 50);
 
+
             enemy.style.left =
                 x + "px";
+
 
             enemy.style.top =
                 "-50px";
 
+
             game.appendChild(enemy);
+
 
             enemies.push({
 
@@ -511,7 +856,9 @@
 
                 y: -50,
 
-                speed: 1.5 + Math.random() * 1.5
+                speed:
+                    1.5 +
+                    Math.random() * 1.5
 
             });
 
@@ -523,16 +870,21 @@
             const explosion =
                 document.createElement("div");
 
+
             explosion.className =
                 "explosion";
+
 
             explosion.style.left =
                 x + "px";
 
+
             explosion.style.top =
                 y + "px";
 
+
             game.appendChild(explosion);
+
 
             setTimeout(() => {
 
@@ -547,13 +899,17 @@
 
             return (
 
-                a.x < b.x + b.width &&
+                a.x <
+                b.x + b.width &&
 
-                a.x + a.width > b.x &&
+                a.x + a.width >
+                b.x &&
 
-                a.y < b.y + b.height &&
+                a.y <
+                b.y + b.height &&
 
-                a.y + a.height > b.y
+                a.y + a.height >
+                b.y
 
             );
 
@@ -568,14 +924,23 @@
 
             // PLAYER MOVEMENT
 
-            if (keys["ArrowLeft"] || keys["KeyA"]) {
+
+            if (
+                keys["ArrowLeft"] ||
+                keys["KeyA"] ||
+                touchLeft
+            ) {
 
                 playerX -= 5;
 
             }
 
 
-            if (keys["ArrowRight"] || keys["KeyD"]) {
+            if (
+                keys["ArrowRight"] ||
+                keys["KeyD"] ||
+                touchRight
+            ) {
 
                 playerX += 5;
 
@@ -591,11 +956,13 @@
 
             if (
                 playerX >
-                game.clientWidth - player.offsetWidth
+                game.clientWidth -
+                player.offsetWidth
             ) {
 
                 playerX =
-                    game.clientWidth - player.offsetWidth;
+                    game.clientWidth -
+                    player.offsetWidth;
 
             }
 
@@ -606,120 +973,153 @@
 
             // BULLETS
 
-            bullets.forEach((bullet, bulletIndex) => {
 
-                bullet.y -= 8;
+            bullets.forEach(
+                (bullet, bulletIndex) => {
 
-                bullet.element.style.bottom =
-                    (game.clientHeight - bullet.y) + "px";
+                    bullet.y -= 8;
 
 
-                if (bullet.y < -20) {
+                    bullet.element.style.top =
+                        bullet.y + "px";
 
-                    bullet.element.remove();
 
-                    bullets.splice(bulletIndex, 1);
+                    if (bullet.y < -20) {
+
+                        bullet.element.remove();
+
+                        bullets.splice(
+                            bulletIndex,
+                            1
+                        );
+
+                    }
 
                 }
-
-            });
+            );
 
 
             // ENEMIES
 
-            enemies.forEach((enemy, enemyIndex) => {
 
-                enemy.y += enemy.speed;
+            enemies.forEach(
+                (enemy, enemyIndex) => {
 
-                enemy.element.style.top =
-                    enemy.y + "px";
-
-
-                // Enemy reaches player
-
-                if (enemy.y >
-                    game.clientHeight - 80) {
-
-                    health -= 20;
-
-                    healthText.textContent =
-                        health;
-
-                    enemy.element.remove();
-
-                    enemies.splice(enemyIndex, 1);
-
-                    if (health <= 0) {
-
-                        endGame();
-
-                    }
-
-                    return;
-
-                }
+                    enemy.y += enemy.speed;
 
 
-                // Bullet collision
-
-                bullets.forEach((bullet, bulletIndex) => {
-
-                    const bulletRect = {
-
-                        x: bullet.x,
-
-                        y: bullet.y,
-
-                        width: 5,
-
-                        height: 18
-
-                    };
-
-
-                    const enemyRect = {
-
-                        x: enemy.x,
-
-                        y: enemy.y,
-
-                        width: 50,
-
-                        height: 40
-
-                    };
+                    enemy.element.style.top =
+                        enemy.y + "px";
 
 
                     if (
-                        collision(
-                            bulletRect,
-                            enemyRect
-                        )
+                        enemy.y >
+                        game.clientHeight - 80
                     ) {
 
-                        explode(
-                            enemy.x,
-                            enemy.y
-                        );
+                        health -= 20;
+
+
+                        healthText.textContent =
+                            health;
+
 
                         enemy.element.remove();
 
-                        bullet.element.remove();
 
-                        enemies.splice(enemyIndex, 1);
+                        enemies.splice(
+                            enemyIndex,
+                            1
+                        );
 
-                        bullets.splice(bulletIndex, 1);
 
-                        score += 10;
+                        if (health <= 0) {
 
-                        scoreText.textContent =
-                            score;
+                            endGame();
+
+                        }
+
+                        return;
 
                     }
 
-                });
 
-            });
+                    // BULLET COLLISION
+
+
+                    bullets.forEach(
+                        (bullet, bulletIndex) => {
+
+                            const bulletRect = {
+
+                                x: bullet.x,
+
+                                y: bullet.y,
+
+                                width: 5,
+
+                                height: 18
+
+                            };
+
+
+                            const enemyRect = {
+
+                                x: enemy.x,
+
+                                y: enemy.y,
+
+                                width: 50,
+
+                                height: 40
+
+                            };
+
+
+                            if (
+                                collision(
+                                    bulletRect,
+                                    enemyRect
+                                )
+                            ) {
+
+                                explode(
+                                    enemy.x,
+                                    enemy.y
+                                );
+
+
+                                enemy.element.remove();
+
+
+                                bullet.element.remove();
+
+
+                                enemies.splice(
+                                    enemyIndex,
+                                    1
+                                );
+
+
+                                bullets.splice(
+                                    bulletIndex,
+                                    1
+                                );
+
+
+                                score += 10;
+
+
+                                scoreText.textContent =
+                                    score;
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
 
 
             requestAnimationFrame(gameLoop);
@@ -731,8 +1131,10 @@
 
             gameRunning = false;
 
+
             finalScore.textContent =
                 score;
+
 
             gameOver.style.display =
                 "flex";
@@ -742,18 +1144,22 @@
 
         function restartGame() {
 
-            bullets.forEach(b => {
+            bullets.forEach(
+                bullet => {
 
-                b.element.remove();
+                    bullet.element.remove();
 
-            });
+                }
+            );
 
 
-            enemies.forEach(e => {
+            enemies.forEach(
+                enemy => {
 
-                e.element.remove();
+                    enemy.element.remove();
 
-            });
+                }
+            );
 
 
             bullets = [];
@@ -764,29 +1170,38 @@
 
             score = 0;
 
+            touchLeft = false;
+
+            touchRight = false;
+
+
             healthText.textContent =
                 health;
+
 
             scoreText.textContent =
                 score;
 
+
             gameRunning = true;
+
 
             gameOver.style.display =
                 "none";
 
+
             setupPlayer();
+
 
             gameLoop();
 
         }
 
 
-        setInterval(() => {
-
-            createEnemy();
-
-        }, 900);
+        setInterval(
+            createEnemy,
+            900
+        );
 
 
         gameLoop();
